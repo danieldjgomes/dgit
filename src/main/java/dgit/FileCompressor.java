@@ -1,11 +1,10 @@
 package dgit;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
+import java.util.zip.Deflater;
 
 public class FileCompressor {
 
@@ -56,5 +55,38 @@ public class FileCompressor {
         }
 
         return sb.toString();
+    }
+
+    public static String deflateFile(File file) {
+        byte[] buffer = new byte[8192];
+        int count;
+
+        // Read file content into a byte array
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file))) {
+            while ((count = bis.read(buffer)) > 0) {
+                baos.write(buffer, 0, count);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        byte[] fileData = baos.toByteArray();
+
+        // Deflate (compress) the file data
+        Deflater deflater = new Deflater();
+        deflater.setInput(fileData);
+        deflater.finish();
+
+        ByteArrayOutputStream deflatedOutput = new ByteArrayOutputStream();
+        byte[] deflateBuffer = new byte[8192];
+        while (!deflater.finished()) {
+            int deflatedCount = deflater.deflate(deflateBuffer);
+            deflatedOutput.write(deflateBuffer, 0, deflatedCount);
+        }
+        deflater.end();
+
+        // Convert deflated data to Base64 for easier representation
+        return Base64.getEncoder().encodeToString(deflatedOutput.toByteArray());
+
     }
 }

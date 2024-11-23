@@ -1,5 +1,8 @@
 package dgit.Commands;
 
+import dgit.FilePrinter;
+import dgit.FileUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -13,20 +16,17 @@ public class InitCommand implements Command {
             System.exit(1);
         }
         file.mkdirs();
-        File head = new File(".dgit/HEAD");
-        try {
-            Files.write(head.toPath(), "ref: refs/heads/master".getBytes());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        new File(".dgit/config").mkdirs();
-        new File(".dgit/objects").mkdirs();
-            new File(".dgit/objects/info").mkdirs();
-            new File(".dgit/objects/pack").mkdirs();
 
-        new File(".dgit/refs").mkdirs();
-        new File(".dgit/refs/heads").mkdirs();
-        new File(".dgit/refs/tags").mkdirs();
+        File head = FileUtils.createFileIfNotExist(".dgit/HEAD");
+        FilePrinter.writeFile(head,"ref: refs/heads/master");
 
+        FileUtils.createFolderIfNotExist(".dgit/config");
+        FileUtils.createFolderIfNotExist(".dgit/objects");
+        FileUtils.createFolderIfNotExist(".dgit/objects/info");
+        FileUtils.createFolderIfNotExist(".dgit/objects/pack");
+
+        FileUtils.createFolderIfNotExist(".dgit/refs");
+        FileUtils.createFolderIfNotExist(".dgit/refs/heads");
+        FileUtils.createFolderIfNotExist(".dgit/refs/tags");
     }
 }
