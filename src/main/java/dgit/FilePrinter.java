@@ -13,7 +13,7 @@ public class FilePrinter {
     public static void writeFile(File file, String content, boolean append) {
         try {
             FileWriter treeWriter = new FileWriter(file, append);
-            treeWriter.write(content);
+            treeWriter.append(content);
             treeWriter.close();
         } catch (IOException e) {
             throw new RuntimeException(e);

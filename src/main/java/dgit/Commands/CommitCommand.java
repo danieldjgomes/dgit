@@ -2,6 +2,7 @@ package dgit.Commands;
 
 import dgit.FileUtils;
 import dgit.IndexEntry;
+import dgit.Node;
 import dgit.builder.CommitRegister;
 import dgit.builder.IndexBuilder;
 import dgit.builder.TreeRegister;
@@ -9,7 +10,12 @@ import dgit.builder.TreeRegister;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.List;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static dgit.FileUtils.buildNodeTreeFromIndexEntry;
+import static java.util.stream.Collectors.groupingBy;
 
 public class CommitCommand implements Command{
     @Override
@@ -55,15 +61,11 @@ public class CommitCommand implements Command{
 
         try {
             List<IndexEntry> list = Files.readAllLines(index.toPath()).stream().map(IndexEntry::new).toList();
-            String sha = null;
 
-            for (IndexEntry indexEntry : list) {
-                for (int i = indexEntry.getPath().getNameCount(); i > 0; i--) {
-                    File file = new File(indexEntry.getPath().subpath(0, i).toString());
-                    sha = TreeRegister.registry(FileUtils.getType(file), file.getName(),
-                            sha == null ? indexEntry.getSha() : sha);
-                }
-            }
+            List<Node> topNodes = FileUtils.buildNodeTreeFromIndexEntry(list);
+
+            String topNodesSHA = topNodes.stream().map(this::processNode).collect(Collectors.joining("\n"));
+            String sha = TreeRegister.registry(topNodesSHA);
 
             String parentCommit = CommitRegister.getParentCommit();
             String currentBranch = CommitRegister.getCurrentBranch();
@@ -75,4 +77,17 @@ public class CommitCommand implements Command{
 
 
     }
+
+    private String processNode(Node node) {
+        if (node.getNodes().isEmpty()) {
+            return String.join(" ", node.getNodeType(), node.getSha(), node.getId());
+        }
+        String sha = node.getNodes().stream()
+                .map(this::processNode)
+                .collect(Collectors.joining("\n"));
+        return String.join(" ", node.getNodeType(), TreeRegister.registry(sha), node.getId());
+    }
+
 }
+
+

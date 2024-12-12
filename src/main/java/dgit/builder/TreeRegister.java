@@ -14,7 +14,16 @@ public class TreeRegister {
 
         FileUtils.createFolderIfNotExist(".dgit/objects/" + fileSha.substring(0, 2));
         File tree = FileUtils.createFileIfNotExist(".dgit/objects/" + fileSha.substring(0, 2) + "/" + fileSha.substring(2));
-        FilePrinter.writeFile(tree, fileContent);
+        FilePrinter.writeFile(tree, fileContent,true);
         return fileSha;
     }
+
+    public static String registry(String fileContent) {
+        String fileSha = FileCompressor.sha1(fileContent);
+        FileUtils.createFolderIfNotExist(".dgit/objects/" + fileSha.substring(0, 2));
+        File tree = FileUtils.createFileIfNotExist(".dgit/objects/" + fileSha.substring(0, 2) + "/" + fileSha.substring(2));
+        FilePrinter.writeFile(tree, fileContent,true);
+        return fileSha;
+    }
+
 }
