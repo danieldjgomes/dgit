@@ -11,7 +11,7 @@ public class IndexBuilder {
     public static void registryOnIndex(File file) {
         String sha1 = FileCompressor.sha1(file);
         File subIndex = new File(".dgit/index");
-        String content = FileUtils.getType(file) + " " + sha1 + " " + file.getPath();
+        String content = String.join(" ", FileUtils.getType(file), sha1, String.valueOf(file.lastModified()), file.getPath());
         FilePrinter.writeFile(subIndex, content + "\n", true);
     }
 

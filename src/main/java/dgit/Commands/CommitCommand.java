@@ -22,7 +22,7 @@ public class CommitCommand implements Command{
     public void execute(String[] args) {
         File index = new File(".dgit/index");
         if(!index.exists()){
-            System.err.println("Not existing DGit project");
+            System.err.println("\u001B[31m" + "Not existing DGit project");
             System.exit(1);
         }
 
@@ -70,7 +70,7 @@ public class CommitCommand implements Command{
             String parentCommit = CommitRegister.getParentCommit();
             String currentBranch = CommitRegister.getCurrentBranch();
             CommitRegister.register(sha, message, author, parentCommit, currentBranch);
-            IndexBuilder.cleanIndex();
+            //IndexBuilder.cleanIndex();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

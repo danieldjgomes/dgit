@@ -17,6 +17,7 @@ public class Main {
         commands.put("add", new AddCommand());
         commands.put("commit", new CommitCommand());
         commands.put("checkout", new CheckoutCommand());
+        commands.put("status", new StatusCommand());
 
         if (args.length == 0) {
             System.err.println("Usage: dgit <command> [<args>]");
